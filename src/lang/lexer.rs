@@ -1,18 +1,18 @@
 #![allow(dead_code)]
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Lexer {
     pub(crate) input: String,
     pub(crate) pos: usize,
     pub(crate) tokens: Vec<Token>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Token {
     pub(crate) kind: TokenKind,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub enum TokenKind {
     Number(u128),
     Plus,

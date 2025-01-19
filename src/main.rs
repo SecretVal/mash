@@ -1,12 +1,15 @@
 #![allow(unused_mut)]
 use std::io::{stdin, stdout, Stdout, Write};
 
-use lang::lexer::{Lexer, TokenKind};
+use lang::{
+    lexer::{Lexer, TokenKind},
+    parser::Parser,
+};
 
 mod lang;
 
 fn main() -> Result<(), &'static str> {
-    let mut quit = false;
+   let mut quit = false;
     while !quit {
         let mut stdout = stdout();
         let mut stdin = stdin();
@@ -18,12 +21,13 @@ fn main() -> Result<(), &'static str> {
 
         let mut lexer = Lexer::new(buf);
         let _ = lexer.lex_input()?;
-        for t in lexer.tokens {
+        for t in &lexer.tokens {
             if t.kind == TokenKind::Exit {
                 quit = true;
             }
-            println!("{:?}", t);
         }
+	let mut parser = Parser::new(lexer.tokens);
+        parser.parse()?;
     }
 
     Ok(())
