@@ -3,4 +3,4 @@ Mash (like in mashed potatoes) is short for math shell.
 It cannot do anything rn other than parsing plus and minus binary expressions. But I will get to it.
 
 ** Contributions
-Why but go for it.t
+Why but go for it.
