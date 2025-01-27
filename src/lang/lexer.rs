@@ -10,11 +10,12 @@ pub struct Lexer {
 #[derive(Debug, Default, Clone)]
 pub struct Token {
     pub(crate) kind: TokenKind,
+    pub(crate) value: Option<Value>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub enum TokenKind {
-    Number(u128),
+    Number,
     Plus,
     Minus,
     #[default]
@@ -22,6 +23,14 @@ pub enum TokenKind {
     Whitespace,
     Exit,
 }
+
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum Value {
+    Number(u128),
+    Char(char),
+}
+
 
 impl Lexer {
     pub fn new(input: String) -> Self {
@@ -48,6 +57,7 @@ impl Lexer {
         } else if current.is_whitespace() {
             t = Token {
                 kind: TokenKind::Whitespace,
+		value: None,
             };
         } else {
             t = self.consume_char();
@@ -66,7 +76,8 @@ impl Lexer {
         }
 
         Token {
-            kind: TokenKind::Number(buf.parse().expect("fuck this thing")),
+            kind: TokenKind::Number,
+	    value: Some(Value::Number(buf.parse().unwrap()))
         }
     }
 
@@ -78,7 +89,7 @@ impl Lexer {
             '-' => TokenKind::Minus,
             _ => return self.consume_word(),
         };
-        Token { kind }
+        Token { kind , value: Some(Value::Char(c))}
     }
 
     fn consume_word(&mut self) -> Token {
@@ -91,7 +102,9 @@ impl Lexer {
             "exit" => TokenKind::Exit,
             _ => TokenKind::default(),
         };
-        Token { kind }
+
+	// TODO: Add a value when needed
+        Token { kind , value: None}
     }
 
     fn current(&self) -> char {

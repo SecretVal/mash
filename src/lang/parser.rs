@@ -1,6 +1,4 @@
 #![allow(dead_code)]
-use std::{thread::current, u128};
-
 use super::lexer::*;
 
 #[derive(Debug, Default)]
@@ -60,20 +58,29 @@ impl Parser {
 
     fn parse_expression(&mut self, t: Token) -> Result<(), &'static str> {
         match t.kind {
-            TokenKind::Number(num) => {
+            TokenKind::Number => {
+		let v = t.value.unwrap();
+		let num = match v {
+		    Value::Number(num) => num,
+		    _ => todo!(),
+		};
                 let one_ahead = self.peek(0);
-		println!("{one_ahead:?}");
                 if one_ahead.kind == TokenKind::Minus || one_ahead.kind == TokenKind::Plus {
-		    println!("is a ");
-                    let op = self.consume()?;
-                    let t2 = self.consume()?;
-                    let num2 = match t2.kind {
-                        TokenKind::Number(num2) => num2,
-                        _ => return Err("invalid Token"),
-                    };
+                    let op = self.expect(vec![TokenKind::Plus, TokenKind::Minus])?;
+		    let v2 = match self.expect(vec![TokenKind::Number])?.kind {
+			TokenKind::Number => self.peek(0).value.clone().unwrap(),
+			_ => return Err("WTF"),
+			    
+		    };
+		    
+		    let num2 = match v2 {
+			Value::Number(num) => num,
+			_ => todo!(),
+		    };
+                    		    
                     let kind = match op.kind {
-                        TokenKind::Plus => ExpressionKind::PlusExpression(num, num2),
-                        TokenKind::Minus => ExpressionKind::MinusExpression(num, num2),
+                        TokenKind::Plus => ExpressionKind::PlusExpression(num,num2),
+                        TokenKind::Minus => ExpressionKind::MinusExpression(num,num2),
                         _ => return Err("idfk"),
                     };
                     self.output.push(Statement {
@@ -94,11 +101,28 @@ impl Parser {
 
         Ok(())
     }
+    
+    fn expect(&mut self, tks: Vec<TokenKind>) -> Result<Token, &'static str> {
+	let tc = self.consume()?;
+	let mut found = false;
+	for tk in tks {
+	    if tk == tc.kind {
+		found = true;
+	    }
+	}
+	if found {
+	    Ok(tc)
+	} else {
+	    Err("expected smth diff")
+	}
+
+    }
+
 
     fn peek(&self, offset: usize) -> &Token {
         let mut i = self.pos + offset;
         if self.input.len() <= i {
-            i = self.pos;
+            i = self.pos - 1;
         }
         &self.input[i]
     }
