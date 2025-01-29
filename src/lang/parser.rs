@@ -3,14 +3,14 @@ use super::lexer::*;
 
 #[derive(Debug, Default)]
 pub struct Parser {
-    input: Vec<Token>,
-    output: Vec<Statement>,
-    pos: usize,
+    pub(crate) input: Vec<Token>,
+    pub(crate) output: Vec<Statement>,
+    pub(crate) pos: usize,
 }
 
 #[derive(Debug)]
 pub struct Statement {
-    kind: StatementKind,
+    pub(crate) kind: StatementKind,
 }
 
 #[derive(Debug)]
@@ -20,7 +20,7 @@ pub enum StatementKind {
 
 #[derive(Debug)]
 pub struct Expression {
-    kind: ExpressionKind,
+    pub(crate) kind: ExpressionKind,
 }
 
 #[derive(Debug)]
@@ -50,9 +50,6 @@ impl Parser {
                  _ => self.parse_expression(t)?,	 
              }					 
         }
-        for s in &self.output {
-            println!("Statement: {s:?}");
-        }
         Ok(())
     }
 
@@ -62,7 +59,7 @@ impl Parser {
 		let v = t.value.unwrap();
 		let num = match v {
 		    Value::Number(num) => num,
-		    _ => todo!(),
+		    _ => return  Err("error"),
 		};
                 let one_ahead = self.peek(0);
                 if one_ahead.kind == TokenKind::Minus || one_ahead.kind == TokenKind::Plus {
@@ -75,7 +72,7 @@ impl Parser {
 		    
 		    let num2 = match v2 {
 			Value::Number(num) => num,
-			_ => todo!(),
+			_ => return  Err("err"),
 		    };
                     		    
                     let kind = match op.kind {
@@ -94,8 +91,8 @@ impl Parser {
                     });
                 }
             }
-            TokenKind::Plus => todo!("{t:?}"),
-            TokenKind::Minus => todo!(),
+            TokenKind::Plus => return Err("todo"),
+            TokenKind::Minus => return Err("todo"),
             _ => {}
         }
 

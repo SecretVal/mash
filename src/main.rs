@@ -2,8 +2,7 @@
 use std::io::{stdin, stdout, Stdout, Write};
 
 use lang::{
-    lexer::{Lexer, TokenKind},
-    parser::Parser,
+    interpreter::{self, Intepreter}, lexer::{Lexer, TokenKind}, parser::Parser
 };
 
 mod lang;
@@ -27,7 +26,15 @@ fn main() -> Result<(), &'static str> {
             }
         }
 	let mut parser = Parser::new(lexer.tokens);
-        parser.parse()?;
+        match parser.parse() {
+	    Ok(()) => {},
+	    Err(err) =>{
+		eprintln!("{err}");
+		continue;
+	    }
+	};
+	let mut interpreter = Intepreter::new(parser.output);
+	interpreter.execute()?;
     }
 
     Ok(())
